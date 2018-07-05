@@ -1,0 +1,24 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'java'
+}
+
+group 'com.uddernetworks.ifs'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': "com.uddernetworks.ifs.iFS"
+    }
+}
+
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile 'org.jsoup:jsoup:1.11.3'
+}
