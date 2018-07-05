@@ -22,4 +22,5 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'com.zaxxer:HikariCP:2.6.1'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 }

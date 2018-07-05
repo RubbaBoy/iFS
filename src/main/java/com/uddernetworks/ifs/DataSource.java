@@ -12,6 +12,7 @@ public class DataSource {
     private static HikariDataSource ds;
 
     static {
+        config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl("");
         config.setUsername("");
         config.setPassword("");
