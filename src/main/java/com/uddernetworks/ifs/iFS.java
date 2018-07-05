@@ -34,13 +34,11 @@ public class iFS {
     private boolean blockGif;
     private boolean blockImage;
 
-    public static void main(String[] args) throws URISyntaxException, SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws URISyntaxException {
         new iFS().start();
     }
 
-    public void start() throws URISyntaxException, SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.jdbc.Driver");
-
+    public void start() throws URISyntaxException {
         saveDirectory = new File(iFS.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
         startTimeThread();
 
