@@ -26,7 +26,7 @@ public class iFS {
 
     private int threads = 1; // 25 and 10 are good for only images and downloading, 20 and 0 are for database
     private int betweenDelay = 0;
-    private boolean shuffle = true;
+    private boolean shuffle = false;
 
     private final int dontStartUntilReach = 48200;
 
@@ -41,13 +41,13 @@ public class iFS {
     private AtomicReference<List<String>> seenSets = new AtomicReference<>(new ArrayList<>());
     private AtomicReference<Queue<String>> sets = new AtomicReference<>(new LinkedList<>());
     private File saveDirectory;
-    private String lastSet = shuffle ? "/feeds/shuffle" : "";
+    private final AtomicReference<String> lastSet = new AtomicReference<>(shuffle ? "/feeds/shuffle" : "");
 
     private boolean blockVideo;
     private boolean blockGif;
     private boolean blockImage;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(16);
+    private ExecutorService executorService = Executors.newFixedThreadPool(25);
 
     public static void main(String[] args) throws URISyntaxException, InterruptedException {
         new iFS().start();
@@ -62,7 +62,7 @@ public class iFS {
         blockImage = blockedTypes.contains(MemeType.IMAGE);
 
         try (Connection connection = DataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `memes`;")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `memes2`;")) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -77,7 +77,7 @@ public class iFS {
 
 
         if (!shuffle) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 20; i++) {
                 new Thread(() -> {
                     try {
                         while (true) {
@@ -91,7 +91,7 @@ public class iFS {
         }
 
         System.out.println("Starting in 1 second...");
-        Thread.sleep(10000);
+        Thread.sleep(1000);
 
         start = System.currentTimeMillis();
 
@@ -99,13 +99,17 @@ public class iFS {
             try {
                 Thread.sleep(10);
                 String something = "/feeds/shuffle";
-//                if (!shuffle) {
-//                    Queue<String> got = sets.get();
-//                    if (got.size() == 0) continue;
-//                    something = got.remove();
-//                    if (something == null) continue;
-//                    sets.set(got);
-//                }
+                if (!shuffle) {
+                    Queue<String> got = sets.get();
+                    if (got.size() == 0) continue;
+                    try {
+                        something = got.remove();
+                    } catch (NoSuchElementException ignored) { // When in doubt, try/catch it out
+                        continue;
+                    }
+                    if (something == null) continue;
+                    sets.set(got);
+                }
 
                 String finalSomething = something;
                 executorService.execute(() -> {
@@ -174,7 +178,7 @@ public class iFS {
                     added.incrementAndGet();
                     queryPool.execute(() -> {
                         try (Connection connection = DataSource.getConnection();
-                             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `memes` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
+                             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `memes2` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
                             preparedStatement.setString(1, meme.getType());
                             preparedStatement.setString(2, meme.getSrc());
                             preparedStatement.setString(3, meme.getUrl());
@@ -224,7 +228,7 @@ public class iFS {
 //            System.out.println("foundSet = " + foundSet);
             }
 
-            lastSet = foundSet;
+            lastSet.set(foundSet);
         } catch (ConnectException e) {
 
         }
