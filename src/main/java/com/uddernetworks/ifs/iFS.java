@@ -62,7 +62,7 @@ public class iFS {
         blockImage = blockedTypes.contains(MemeType.IMAGE);
 
         try (Connection connection = DataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `memes2`;")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `memes`;")) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -178,7 +178,7 @@ public class iFS {
                     added.incrementAndGet();
                     queryPool.execute(() -> {
                         try (Connection connection = DataSource.getConnection();
-                             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `memes2` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
+                             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `memes` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
                             preparedStatement.setString(1, meme.getType());
                             preparedStatement.setString(2, meme.getSrc());
                             preparedStatement.setString(3, meme.getUrl());
